@@ -1,0 +1,22 @@
+service:
+  name: "odin"
+  port: 3000
+store:
+  client: "mongodb"
+  host: "127.0.0.1"
+  port: 27017
+  timeout: 10
+server:
+  timeout:
+    read: 5
+    write: 10
+    idle: 60
+    shutdown: 30
+security:
+  allowed:
+    origins: ["*"]
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
+    headers: ["content-type"]
+  allowCredentials: true
+auth:
+  csrf: "some-super-secret-csrf-key"
