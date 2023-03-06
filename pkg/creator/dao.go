@@ -11,21 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const COLLECTION_NAME = "creators"
+
 type dao struct {
-	creators  *mongo.Collection
+	client    *mongo.Client
 	validator *validator.Validator
 }
 
-func NewDao(db *mongo.Client, validator *validator.Validator) *dao {
+func NewDao(client *mongo.Client, validator *validator.Validator) *dao {
 	return &dao{
-		creators:  db.Database("huma").Collection("creators"),
+		client:    client,
 		validator: validator,
 	}
 }
 
 func (d *dao) Find(ctx context.Context, filter core.Where) ([]*Creator, error) {
 	var creators []*Creator
-	cursor, err := d.creators.Find(ctx, filter)
+	cursor, err := d.client.Database("huma").Collection(COLLECTION_NAME).Find(ctx, filter)
 	if err != nil {
 		if errors.Is(err, ErrCreatorsNotFound) {
 			return creators, nil
@@ -39,7 +41,7 @@ func (d *dao) Find(ctx context.Context, filter core.Where) ([]*Creator, error) {
 }
 
 func (d *dao) FindOne(ctx context.Context, filter core.Where) (*Creator, error) {
-	result := d.creators.FindOne(ctx, filter)
+	result := d.client.Database("huma").Collection(COLLECTION_NAME).FindOne(ctx, filter)
 	err := result.Err()
 	if err != nil {
 		if errors.Is(err, ErrCreatorsNotFound) {
@@ -69,7 +71,7 @@ func (d *dao) Create(ctx context.Context, creator *Creator) (string, error) {
 	creator.Verified = false
 	creator.CreatedAt = now
 	creator.UpdatedAt = now
-	result, err := d.creators.InsertOne(ctx, creator)
+	result, err := d.client.Database("huma").Collection(COLLECTION_NAME).InsertOne(ctx, creator)
 	if err != nil {
 		return "", err
 	}

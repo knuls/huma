@@ -12,7 +12,7 @@ import (
 
 func TestID(t *testing.T) {
 	mux := chi.NewRouter()
-	mux.Use(organization.OrganizationCtx)
+	mux.Use(organization.OrganizationCtx("id"))
 	mux.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "hello %s", chi.URLParam(r, "id"))
 	})

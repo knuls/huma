@@ -10,21 +10,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const COLLECTION_NAME = "organizations"
+
 type dao struct {
-	organizations *mongo.Collection
-	validator     *validator.Validator
+	client    *mongo.Client
+	validator *validator.Validator
 }
 
-func NewDao(db *mongo.Client, validator *validator.Validator) *dao {
+func NewDao(client *mongo.Client, validator *validator.Validator) *dao {
 	return &dao{
-		organizations: db.Database("huma").Collection("organizations"),
-		validator:     validator,
+		client:    client,
+		validator: validator,
 	}
 }
 
 func (d *dao) Find(ctx context.Context, filter core.Where) ([]*Organization, error) {
 	var orgs []*Organization
-	cursor, err := d.organizations.Find(ctx, filter)
+	cursor, err := d.client.Database("huma").Collection(COLLECTION_NAME).Find(ctx, filter)
 	if err != nil {
 		if errors.Is(err, ErrOrganizationsNotFound) {
 			return orgs, nil
@@ -38,7 +40,7 @@ func (d *dao) Find(ctx context.Context, filter core.Where) ([]*Organization, err
 }
 
 func (d *dao) FindOne(ctx context.Context, filter core.Where) (*Organization, error) {
-	result := d.organizations.FindOne(ctx, filter)
+	result := d.client.Database("huma").Collection(COLLECTION_NAME).FindOne(ctx, filter)
 	err := result.Err()
 	if err != nil {
 		if errors.Is(err, ErrOrganizationsNotFound) {
@@ -64,7 +66,7 @@ func (d *dao) Create(ctx context.Context, org *Organization) (string, error) {
 	if len(exists) > 0 {
 		return "", ErrOrganizationDuplicate
 	}
-	result, err := d.organizations.InsertOne(ctx, org)
+	result, err := d.client.Database("huma").Collection(COLLECTION_NAME).InsertOne(ctx, org)
 	if err != nil {
 		return "", err
 	}

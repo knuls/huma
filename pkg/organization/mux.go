@@ -24,7 +24,7 @@ func (m *mux) Routes() *chi.Mux {
 	router.Get("/", m.Find) // GET /organization
 	router.Route("/{id}", func(router chi.Router) {
 		router.Use(middleware.ValidateObjectID("id"))
-		router.Use(OrganizationCtx)
+		router.Use(OrganizationCtx("id"))
 		router.Get("/", m.FindById) // GET /organization/:id
 	})
 	return router

@@ -20,14 +20,14 @@ func NewMux(svc Service) *mux {
 }
 
 func (m *mux) Routes() *chi.Mux {
-	router := chi.NewRouter()
-	router.Get("/", m.Find) // GET /creator
-	router.Route("/{id}", func(router chi.Router) {
-		router.Use(middleware.ValidateObjectID("id"))
-		router.Use(CreatorCtx)
-		router.Get("/", m.FindById) // GET /creator/:id
+	r := chi.NewRouter()
+	r.Get("/", m.Find) // GET /creator
+	r.Route("/{id}", func(r chi.Router) {
+		r.Use(middleware.ValidateObjectID("id"))
+		r.Use(CreatorCtx("id"))
+		r.Get("/", m.FindById) // GET /creator/:id
 	})
-	return router
+	return r
 }
 
 func (m *mux) Find(rw http.ResponseWriter, r *http.Request) {

@@ -12,7 +12,7 @@ import (
 
 func TestCreatorContext(t *testing.T) {
 	mux := chi.NewRouter()
-	mux.Use(creator.CreatorCtx)
+	mux.Use(creator.CreatorCtx("id"))
 	mux.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "hello %s", chi.URLParam(r, "id"))
 	})
