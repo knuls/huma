@@ -45,7 +45,7 @@ func (m *mux) Find(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (m *mux) FindById(rw http.ResponseWriter, r *http.Request) {
-	id := r.Context().Value(organizationIDCtxKey{}).(string)
+	id := r.Context().Value(OrganizationIDCtxKey{}).(string)
 	org, err := m.svc.FindById(r.Context(), id)
 	if err != nil {
 		render.Render(rw, r, presenter.ErrBadRequest(err))

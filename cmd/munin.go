@@ -8,8 +8,7 @@ import (
 func NewMuninCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "munin",
-		Short: "The munin service.",
-		Long:  "The munin service serves and processes pipelines.",
+		Short: "The munin service serves and processes pipelines.",
 		Run: func(cmd *cobra.Command, args []string) {
 			munin.New()
 		},

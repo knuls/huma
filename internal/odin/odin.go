@@ -18,6 +18,7 @@ import (
 	"github.com/knuls/huma/pkg/core/validator"
 	"github.com/knuls/huma/pkg/creator"
 	"github.com/knuls/huma/pkg/organization"
+	"github.com/knuls/huma/pkg/schema"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -89,14 +90,17 @@ func New() {
 	// dao's
 	creatorDao := creator.NewDao(client, val)
 	organizationDao := organization.NewDao(client, val)
+	schemaDao := schema.NewDao(client, val)
 
 	// svc's
 	creatorSvc := creator.NewService(creatorDao)
 	organizationSvc := organization.NewService(organizationDao)
+	schemaSvc := schema.NewService(schemaDao)
 
 	// routers
 	mux.Mount("/creator", creator.NewMux(creatorSvc).Routes())
 	mux.Mount("/organization", organization.NewMux(organizationSvc).Routes())
+	mux.Mount("/schema", schema.NewMux(schemaSvc).Routes())
 
 	// server
 	srv := http.Server{
