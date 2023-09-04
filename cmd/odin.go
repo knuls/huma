@@ -9,7 +9,7 @@ func NewOdinCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "odin",
 		Short: "The odin service.",
-		Long:  "The odin service serves the platform across creators and organizations.",
+		Long:  "The odin service serves the platform across creators, organizations, and users.",
 		Run: func(cmd *cobra.Command, args []string) {
 			odin.New()
 		},

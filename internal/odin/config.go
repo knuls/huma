@@ -2,22 +2,16 @@ package odin
 
 import "time"
 
-// bindings is an array of keys used to generate
-// the environment variable names when loading the configuration.
-// For example: "service.name" will be -> "SERVICE_NAME"
 var bindings = []string{
 	"service.name",
 	"service.port",
 
-	"store.client",
 	"store.host",
 	"store.port",
 	"store.timeout",
 
 	"server.timeout.read",
 	"server.timeout.write",
-	"server.timeout.idle",
-	"server.timeout.shutdown",
 
 	"security.allowed.origins",
 	"security.allowed.methods",
@@ -27,36 +21,33 @@ var bindings = []string{
 	"auth.csrf",
 }
 
-type appConfig struct {
-	Service  serviceConfig
-	Store    storeConfig
-	Server   serverConfig
-	Security securityConfig
-	Auth     authConfig
+type cfg struct {
+	Service  serviceCfg
+	Store    storeCfg
+	Server   serverCfg
+	Security securityCfg
+	Auth     authCfg
 }
 
-type serviceConfig struct {
+type serviceCfg struct {
 	Name string
 	Port int
 }
 
-type storeConfig struct {
-	Client  string
+type storeCfg struct {
 	Host    string
 	Port    int
 	Timeout time.Duration
 }
 
-type serverConfig struct {
+type serverCfg struct {
 	Timeout struct {
-		Read     time.Duration
-		Write    time.Duration
-		Idle     time.Duration
-		Shutdown time.Duration
+		Read  time.Duration
+		Write time.Duration
 	}
 }
 
-type securityConfig struct {
+type securityCfg struct {
 	Allowed struct {
 		Origins []string
 		Methods []string
@@ -65,6 +56,6 @@ type securityConfig struct {
 	AllowCredentials bool
 }
 
-type authConfig struct {
+type authCfg struct {
 	Csrf string
 }
