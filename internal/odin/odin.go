@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/knuls/huma/pkg/config"
 	"github.com/knuls/huma/pkg/log"
@@ -48,23 +49,21 @@ func New() {
 		Addr:         fmt.Sprintf(":%d", cfg.Service.Port),
 		Handler:      mux.Handler(),
 		ErrorLog:     logger.GetStdLogger(),
-		ReadTimeout:  cfg.Server.Timeout.Read,
-		WriteTimeout: cfg.Server.Timeout.Write,
+		ReadTimeout:  cfg.Server.Timeout.Read * time.Second,
+		WriteTimeout: cfg.Server.Timeout.Write * time.Second,
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Error("server listen", "error", err)
 			return
 		}
 	}()
-
-	logger.Info(fmt.Sprintf("starting %s service on port %d", "", 0))
+	logger.Info(fmt.Sprintf("starting %s service on port %d", cfg.Service.Name, cfg.Service.Port))
 
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(sigCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	sig := <-sigCh
-
 	logger.Info(fmt.Sprintf("received shutdown signal %s", sig.String()))
 
 	if err := srv.Shutdown(context.Background()); err != nil {

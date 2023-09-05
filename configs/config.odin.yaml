@@ -9,8 +9,6 @@ server:
   timeout:
     read: 5
     write: 10
-    idle: 60
-    shutdown: 30
 security:
   allowed:
     origins: ["*"]

@@ -11,8 +11,7 @@ type chiMux struct {
 }
 
 func NewChiMux() *chiMux {
-	mux := chi.NewRouter()
-	return &chiMux{mux: mux}
+	return &chiMux{mux: chi.NewRouter()}
 }
 
 func (m *chiMux) Middlewares(middlewares ...Middleware) {
@@ -27,4 +26,18 @@ func (m *chiMux) Routes(routes ...Route) {
 
 func (m *chiMux) Handler() http.Handler {
 	return m.mux
+}
+
+func (m *chiMux) Method(method string, pattern string, handlerFn http.HandlerFunc) {
+	m.mux.MethodFunc(method, pattern, handlerFn)
+}
+
+func (m *chiMux) Fork(pattern string) *chiMux {
+	mux := NewChiMux()
+	m.Routes(Route{Pattern: pattern, Handler: mux.Handler()})
+	return mux
+}
+
+func GetChiURLParam(req *http.Request, param string) string {
+	return chi.URLParam(req, param)
 }
